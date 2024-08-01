@@ -3,7 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#1CAE67">
+    android:background="#B8DA44">
+
+    <LinearLayout
+        android:id="@+id/menuLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="end"
+        android:background="#3CC1A0"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_red_light"
+            android:text="Удалить"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/editButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_orange_light"
+            android:text="Изменить"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/contentLayout"
@@ -11,7 +37,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
-        android:background="#BA3535">
+        android:background="#00E5FF">
 
         <TextView
             android:id="@+id/titleTextView"
@@ -26,30 +52,5 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textSize="16sp" />
-
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/menuLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="end">
-
-    <Button
-        android:id="@+id/deleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/holo_red_light"
-        android:text="Удалить"
-        android:textColor="@android:color/white" />
-
-    <Button
-        android:id="@+id/editButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/holo_orange_light"
-        android:text="Изменить"
-        android:textColor="@android:color/white"/>
-</LinearLayout>
 </FrameLayout>

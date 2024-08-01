@@ -1,9 +1,12 @@
 package com.nayya.testswipe
 
+import android.graphics.Canvas
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import java.lang.Math.max
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -17,7 +20,14 @@ class MainActivity : AppCompatActivity() {
         adapter = ItemAdapter(getItems())
         recyclerView.adapter = adapter
 
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+            }
+
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -27,7 +37,43 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                adapter.handleSwipe(viewHolder.adapterPosition, direction)
+                // Nothing to do here
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    val itemView = viewHolder.itemView
+                    val itemViewHolder = viewHolder as ItemAdapter.ItemViewHolder
+
+                    val width = itemViewHolder.menuLayout.width
+                    if (dX < 0) { // Swiping left
+                        val translationX = max(dX, -width.toFloat())
+                        itemViewHolder.contentLayout.translationX = translationX
+                        itemViewHolder.menuLayout.visibility = View.VISIBLE
+                    } else { // Swiping right
+                        itemViewHolder.contentLayout.translationX = 0f
+                        itemViewHolder.menuLayout.visibility = View.GONE
+                    }
+                } else {
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                }
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                val itemViewHolder = viewHolder as ItemAdapter.ItemViewHolder
+                if (itemViewHolder.contentLayout.translationX < 0) {
+                    itemViewHolder.contentLayout.translationX = 0f
+                    itemViewHolder.menuLayout.visibility = View.GONE
+                }
             }
         })
         itemTouchHelper.attachToRecyclerView(recyclerView)
