@@ -50,16 +50,20 @@ class MainActivity : AppCompatActivity() {
                 isCurrentlyActive: Boolean
             ) {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    val itemView = viewHolder.itemView
                     val itemViewHolder = viewHolder as ItemAdapter.ItemViewHolder
 
-                    val width = itemViewHolder.menuLayout.width
+                    val width = itemViewHolder.menuLayout.width.toFloat()
                     if (dX < 0) { // Swiping left
-                        val translationX = max(dX, -width.toFloat())
+                        // Calculate translation so that menuLayout appears to follow the contentLayout
+                        val translationX = max(dX, -width)
                         itemViewHolder.contentLayout.translationX = translationX
-                        itemViewHolder.menuLayout.visibility = View.VISIBLE
+                        itemViewHolder.menuLayout.translationX = translationX + width
+                        if (itemViewHolder.menuLayout.visibility != View.VISIBLE) {
+                            itemViewHolder.menuLayout.visibility = View.VISIBLE
+                        }
                     } else { // Swiping right
                         itemViewHolder.contentLayout.translationX = 0f
+                        itemViewHolder.menuLayout.translationX = itemViewHolder.contentLayout.width.toFloat()
                         itemViewHolder.menuLayout.visibility = View.GONE
                     }
                 } else {
