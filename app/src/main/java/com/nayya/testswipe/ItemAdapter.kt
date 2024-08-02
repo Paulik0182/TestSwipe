@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
 import kotlin.math.min
-
 class ItemAdapter(private val items: MutableList<Item>) :
     RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
+    private lateinit var itemTouchHelper: ItemTouchHelper
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_view, parent, false)
-        return ItemViewHolder(view)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_view, parent, false)
+        return ItemViewHolder(view, itemTouchHelper)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -27,50 +27,34 @@ class ItemAdapter(private val items: MutableList<Item>) :
 
     override fun getItemCount() = items.size
 
-    inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val contentLayout: View = itemView.findViewById(R.id.contentLayout)
-        val menuLayout: View = itemView.findViewById(R.id.menuLayout)
-        private val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
-        private val editButton: Button = itemView.findViewById(R.id.editButton)
-        private val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
-        private val descriptionTextView: TextView = itemView.findViewById(R.id.descriptionTextView)
-
-        private var currentItem: Item? = null
-        private var currentPosition: Int = -1
-
-        init {
-            deleteButton.setOnClickListener {
-                Log.d("@@@", "null() called  Del")
-                Toast.makeText(itemView.context, "Deleted item: ${currentItem?.title}", Toast.LENGTH_SHORT).show()
-                removeItem(currentPosition)
-            }
-
-            editButton.setOnClickListener {
-                Log.d("@@@", "null() called Edit")
-                Toast.makeText(itemView.context, "Edited item: ${currentItem?.title}", Toast.LENGTH_SHORT).show()
-                // Implement edit functionality here
-            }
-        }
-
-        fun bind(item: Item) {
-            currentItem = item
-            currentPosition = adapterPosition
-            titleTextView.text = item.title
-            descriptionTextView.text = item.description
-            contentLayout.translationX = 0f // Возвращаем содержимое на место
-            menuLayout.visibility = View.GONE // Скрываем меню по умолчанию
-        }
-
-        private fun removeItem(position: Int) {
-            items.removeAt(position)
-            notifyItemRemoved(position)
-        }
+    fun setItemTouchHelper(itemTouchHelper: ItemTouchHelper) {
+        this.itemTouchHelper = itemTouchHelper
     }
 
-    private var recyclerView: RecyclerView? = null
+    inner class ItemViewHolder(itemView: View, private val itemTouchHelper: ItemTouchHelper) : RecyclerView.ViewHolder(itemView) {
+        val contentLayout: ViewGroup = itemView.findViewById(R.id.contentLayout)
+        val menuLayout: ViewGroup = itemView.findViewById(R.id.menuLayout)
+        val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
+        val editButton: Button = itemView.findViewById(R.id.editButton)
+        val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
+        val descriptionTextView: TextView = itemView.findViewById(R.id.descriptionTextView)
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        this.recyclerView = recyclerView
+
+
+        fun bind(item: Item) {
+            titleTextView.text = item.title
+            descriptionTextView.text = item.description
+
+
+            contentLayout.translationX = 0f
+            menuLayout.visibility = View.GONE
+        }
+
+        fun removeItem(position: Int) {
+            if (position != RecyclerView.NO_POSITION) {
+                items.removeAt(position)
+                notifyItemRemoved(position)
+            }
+        }
     }
 }
